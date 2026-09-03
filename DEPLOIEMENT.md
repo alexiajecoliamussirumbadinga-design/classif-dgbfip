@@ -55,9 +55,38 @@ Vérification : **https://classif-dgbfip.onrender.com/health** doit renvoyer
 | Branch | `main` |
 | Runtime | Python 3 |
 | Build Command | `pip install -r requirements.txt` |
-| Start Command | `gunicorn --chdir src app_FINAL:app --bind 0.0.0.0:$PORT` |
+| Start Command | `gunicorn wsgi:app --bind 0.0.0.0:$PORT` |
 | Instance Type | Free |
 | Health Check Path | `/health` |
+
+---
+
+## Dépannage
+
+### « Deploy failed — Exited with status 2 » et les logs installent `dash`, `matplotlib`…
+
+Le service a été créé **manuellement** (et non via Blueprint) : il garde alors ses
+propres *Build Command* / *Start Command*, et ignore `render.yaml`. Il installe
+probablement `requirements_1.txt` (dépendances du notebook, inutiles ici) et lance
+une mauvaise commande.
+
+**Correctif** — dans Render → service `classif-dgbfip` → **Settings** → *Build & Deploy* :
+
+| Réglage | Valeur exacte |
+|---|---|
+| Build Command | `pip install -r requirements.txt` |
+| Start Command | `gunicorn wsgi:app --bind 0.0.0.0:$PORT` |
+| Pre-Deploy Command | *(vide)* |
+
+Puis **Manual Deploy** → *Deploy latest commit*.
+
+*Alternative plus propre* : supprimer ce service (**Settings → Delete**) et le recréer
+via **New + → Blueprint** (là, `render.yaml` est respecté automatiquement).
+
+### `ModuleNotFoundError: No module named 'app_FINAL'`
+
+La *Start Command* doit être `gunicorn wsgi:app` (le fichier `wsgi.py` à la racine se
+charge d'ajouter `src/` au path). Ne pas utiliser `gunicorn app:app` ni `app_FINAL:app`.
 
 ---
 
