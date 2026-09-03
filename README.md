@@ -13,6 +13,13 @@
 
 ---
 
+## Démo en ligne
+
+**https://classif-dgbfip.onrender.com** — déploiement Render (voir [DEPLOIEMENT.md](DEPLOIEMENT.md)).
+Le plan gratuit met le service en veille après 15 min ; la première requête peut prendre ~40 s.
+
+---
+
 ## Description du projet
 
 Ce projet implémente un système automatisé de classification des données sensibles pour la Direction Générale du Budget et des Finances Publiques (DGBFIP) du Gabon, basé sur un algorithme Random Forest (accuracy 91%).

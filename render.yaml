@@ -1,0 +1,21 @@
+# ============================================================
+# Render Blueprint — Classification DGBFIP
+# Déploie l'application sur https://classif-dgbfip.onrender.com
+# ============================================================
+services:
+  - type: web
+    name: classif-dgbfip
+    runtime: python
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --chdir src app_FINAL:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      # MOTEUR = rf  -> Random Forest (défaut)  |  MOTEUR = regles -> logique de règles
+      - key: MOTEUR
+        value: rf

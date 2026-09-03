@@ -22,9 +22,17 @@ FEATURES   = ['volume_lignes', 'nb_champs_pii', 'presence_financier',
 #                          paramètre -> le résultat évolue de façon lisible »).
 FORCE_ENGINE = os.environ.get("MOTEUR", "rf").lower()
 
+def _log(msg):
+    """Print robuste : ne casse jamais l'appli si stdout n'est pas en UTF-8."""
+    try:
+        print(msg, flush=True)
+    except Exception:
+        print(msg.encode("ascii", "replace").decode("ascii"), flush=True)
+
+
 RF_MODEL = RF_SCALER = RF_LE = None
 if FORCE_ENGINE == "regles":
-    print("ℹ️  MOTEUR=regles — logique de règles forcée (Random Forest ignoré).")
+    _log("[INFO] MOTEUR=regles - logique de regles forcee (Random Forest ignore).")
 else:
     try:
         import numpy as np
@@ -32,9 +40,9 @@ else:
         RF_MODEL  = joblib.load(os.path.join(MODELS_DIR, "random_forest_dgb.pkl"))
         RF_SCALER = joblib.load(os.path.join(MODELS_DIR, "scaler.pkl"))
         RF_LE     = joblib.load(os.path.join(MODELS_DIR, "label_encoder.pkl"))
-        print("✅ Modèle Random Forest chargé depuis models/")
+        _log("[OK] Modele Random Forest charge depuis models/")
     except Exception as e:
-        print(f"⚠️  Modèle Random Forest indisponible ({e}) — bascule sur la logique de règles.")
+        _log(f"[WARN] Modele Random Forest indisponible ({e}) - bascule sur la logique de regles.")
 
 
 def predire_rf(f):
