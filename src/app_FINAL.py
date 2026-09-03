@@ -8,6 +8,45 @@ import os
 
 app = Flask(__name__)
 
+# ── CHARGEMENT DU MODELE RANDOM FOREST (si disponible) ───────────────
+# Entraîné par src/train_model.py -> artefacts dans models/
+BASE_DIR   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+FEATURES   = ['volume_lignes', 'nb_champs_pii', 'presence_financier',
+              'presence_nom', 'presence_identifiant', 'nb_utilisateurs_acces',
+              'frequence_acces_jour', 'chiffrement_actuel', 'logs_actives']
+
+# MOTEUR = "rf" (défaut) : utilise le Random Forest si les artefacts sont présents.
+# MOTEUR = "regles"      : force la logique de règles (déterministe, monotone,
+#                          idéale pour une démo interactive « je change un
+#                          paramètre -> le résultat évolue de façon lisible »).
+FORCE_ENGINE = os.environ.get("MOTEUR", "rf").lower()
+
+RF_MODEL = RF_SCALER = RF_LE = None
+if FORCE_ENGINE == "regles":
+    print("ℹ️  MOTEUR=regles — logique de règles forcée (Random Forest ignoré).")
+else:
+    try:
+        import numpy as np
+        import joblib
+        RF_MODEL  = joblib.load(os.path.join(MODELS_DIR, "random_forest_dgb.pkl"))
+        RF_SCALER = joblib.load(os.path.join(MODELS_DIR, "scaler.pkl"))
+        RF_LE     = joblib.load(os.path.join(MODELS_DIR, "label_encoder.pkl"))
+        print("✅ Modèle Random Forest chargé depuis models/")
+    except Exception as e:
+        print(f"⚠️  Modèle Random Forest indisponible ({e}) — bascule sur la logique de règles.")
+
+
+def predire_rf(f):
+    """Prédiction via le modèle Random Forest entraîné."""
+    x = np.array([[float(f.get(k, 0)) for k in FEATURES]], dtype=float)
+    x[:, 0] = np.log1p(x[:, 0])   # volume_lignes
+    x[:, 6] = np.log1p(x[:, 6])   # frequence_acces_jour
+    x = RF_SCALER.transform(x)
+    proba  = RF_MODEL.predict_proba(x)[0]
+    niveau = RF_LE.classes_[int(np.argmax(proba))]
+    return niveau, round(float(np.max(proba)) * 100, 1)
+
 HTML_PAGE = """
 <!DOCTYPE html>
 <html lang="fr">
@@ -315,17 +354,26 @@ def predict():
     data = request.get_json()
     if not data:
         return jsonify({'error': 'Données manquantes'}), 400
-    niveau, confiance = classifier_table(data)
+    if RF_MODEL is not None:
+        niveau, confiance = predire_rf(data)
+        moteur = 'random_forest'
+    else:
+        niveau, confiance = classifier_table(data)
+        moteur = 'regles'
     return jsonify({
         'niveau':          niveau,
         'confiance':       confiance,
-        'recommandations': RECO[niveau]
+        'recommandations': RECO[niveau],
+        'moteur':          moteur
     })
 
 
 @app.route('/health')
 def health():
-    return jsonify({'status': 'ok'})
+    return jsonify({
+        'status': 'ok',
+        'modele': 'random_forest' if RF_MODEL is not None else 'regles'
+    })
 
 
 if __name__ == '__main__':

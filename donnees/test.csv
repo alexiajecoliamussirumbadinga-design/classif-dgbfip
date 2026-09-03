@@ -1,0 +1,16 @@
+nom_table,systeme_info,volume_lignes,nb_champs_pii,presence_financier,presence_nom,presence_identifiant,nb_utilisateurs_acces,frequence_acces_jour,chiffrement_actuel,logs_actives,niveau_sensibilite
+Journal_Ecritures,ASTER,1100000,0,1,0,1,35,410,1,1,Confidentiel
+Conges_Absences,SIRH,97000,5,0,1,1,26,112,1,1,Confidentiel
+Plan_Comptable,ASTER,4500,0,0,0,0,120,85,2,1,Public
+Rapprochements_Bancaires,ASTER,380000,1,1,0,1,22,167,1,1,Confidentiel
+Immobilisations,ASTER,195000,0,1,0,1,19,98,1,1,Interne
+Dotations_Ministeres,SIGFIP,175000,0,1,0,1,20,130,1,0,Interne
+Remises_Gracieuses,VECTEUR,145000,2,1,1,1,16,92,2,0,Interne
+Flux_Tresorerie,ASTER,265000,0,1,0,1,17,142,1,1,Interne
+Subventions_Accordees,SIGFIP,215000,1,1,0,1,24,165,1,1,Confidentiel
+Virements_Comptes,SIGFIP,750000,2,1,0,1,41,380,0,1,Secret
+Recettes_Fiscales,SIGFIP,980000,3,1,1,1,67,520,0,0,Secret
+Parametres_Systeme,ASTER,1200,0,0,0,0,95,72,2,1,Public
+Rapports_Financiers,SIGFIP,48000,0,1,0,0,12,42,2,1,Public
+Controles_Fiscaux,VECTEUR,310000,4,1,1,1,28,195,1,1,Confidentiel
+Identites_Agents,SIRH,280000,9,0,1,1,39,175,1,1,Secret

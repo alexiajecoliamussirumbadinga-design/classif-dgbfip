@@ -1,0 +1,45 @@
+{
+  "projet": "Classification donnees sensibles DGBFIP Gabon",
+  "auteure": "MUSSIRU MBADINGA Alexia Jecolia",
+  "entreprise": "SPOTITECH GROUP SA",
+  "client": "DGBFIP",
+  "date_entrainement": "2026-09-03T23:01:04",
+  "methodologie": "notebook",
+  "modele": "RandomForestClassifier",
+  "hyperparams": {
+    "max_depth": null,
+    "min_samples_leaf": 1,
+    "min_samples_split": 6,
+    "n_estimators": 50
+  },
+  "cv_score": 79.23,
+  "test_accuracy": 85.71,
+  "train_accuracy": 93.62,
+  "split": {
+    "train": 32,
+    "test": 15,
+    "ratio": "70/30 stratifie"
+  },
+  "classes": [
+    "Confidentiel",
+    "Interne",
+    "Public",
+    "Secret"
+  ],
+  "features": [
+    "volume_lignes",
+    "nb_champs_pii",
+    "presence_financier",
+    "presence_nom",
+    "presence_identifiant",
+    "nb_utilisateurs_acces",
+    "frequence_acces_jour",
+    "chiffrement_actuel",
+    "logs_actives"
+  ],
+  "log_transform": [
+    "volume_lignes",
+    "frequence_acces_jour"
+  ],
+  "nb_tables": 47
+}
